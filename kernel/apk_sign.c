@@ -99,11 +99,10 @@ static bool check_block(struct file *fp, u32 *size4, loff_t *pos, u32 *offset,
 			return false;
 		}
 		ksu_kernel_read_compat(fp, cert, *size4, pos);
-		unsigned char digest[SHA256_DIGEST_SIZE];
-		if (IS_ERR(ksu_sha256(cert, *size4, digest))) {
-			pr_info("sha256 error\n");
-			return false;
-		}
+                if (ksu_sha256(cert, *size4, digest) < 0) { // Check for error condition
+                pr_info("sha256 error\n");
+                return false;
+                }
 
 		char hash_str[SHA256_DIGEST_SIZE * 2 + 1];
 		hash_str[SHA256_DIGEST_SIZE * 2] = '\0';
