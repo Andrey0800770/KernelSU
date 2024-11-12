@@ -262,12 +262,15 @@ static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 
 static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-	struct pt_regs *real_regs = PT_REAL_REGS(regs);
-	const char __user **filename_user =
-		(const char **)&PT_REGS_PARM1(real_regs);
+    struct pt_regs *real_regs = PT_REAL_REGS(regs);
+    const char __user **filename_user =
+        (const char **)&PT_REGS_PARM1(real_regs);
 
-	return ksu_handle_execve_sucompat(AT_FDCWD, filename_user, NULL, NULL,
-					  NULL);
+    // Assuming we need to pass a pointer to a specific structure
+    struct some_struct my_struct; // Replace 'some_struct' with the actual type
+    // Initialize my_struct as necessary
+
+    return ksu_handle_execve_sucompat(&my_struct, filename_user, NULL, NULL, NULL);
 }
 
 #if 1
