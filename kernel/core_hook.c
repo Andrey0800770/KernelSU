@@ -263,7 +263,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 	// Both root manager and root processes should be allowed to get version
 	if (arg2 == CMD_GET_VERSION) {
 		u32 version = KERNEL_SU_VERSION;
-		if (copy_to_user(arg3, &version, sizeof(version))) {
+		if (copy_to_user((void __user *)arg3, &version, sizeof(version))) {
 			pr_err("prctl reply error, cmd: %lu\n", arg2);
 		}
 #ifdef MODULE
@@ -271,7 +271,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 #else
 		u32 is_lkm = 0x0;
 #endif
-		if (arg4 && copy_to_user(arg4, &is_lkm, sizeof(is_lkm))) {
+		if (arg4 && copy_to_user((void __user *)arg4, &is_lkm, sizeof(is_lkm))) {
 			pr_err("prctl reply error, cmd: %lu\n", arg2);
 		}
 		return 0;
@@ -365,7 +365,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 		} else {
 			pr_err("unknown cmd: %lu\n", arg2);
 		}
-		if (!copy_to_user(arg4, &allow, sizeof(allow))) {
+		if (!copy_to_user((void __user *)arg4, &allow, sizeof(allow))) {
 			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("prctl reply error, cmd: %lu\n", arg2);
 			}
@@ -390,7 +390,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 
 		bool success = ksu_get_app_profile(&profile);
 		if (success) {
-			if (copy_to_user(arg3, &profile, sizeof(profile))) {
+		if (copy_to_user((void __user *)arg3, &profile, sizeof(profile))) {
 				pr_err("copy profile failed\n");
 				return 0;
 			}
