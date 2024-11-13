@@ -474,20 +474,19 @@ bool ksu_is_safe_mode()
 
 static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-    int fd = PT_REGS_PARM1(regs);  // fd is correctly defined as an int
+    int fd = PT_REGS_PARM1(regs);
     struct filename **filename_ptr =
-        (struct filename **)(uintptr_t)PT_REGS_PARM2(regs);  // Fixed line
+        (struct filename **)(uintptr_t)&PT_REGS_PARM2(regs);
     struct user_arg_ptr argv;
-
 #ifdef CONFIG_COMPAT
     argv.is_compat = PT_REGS_PARM3(regs);
     if (unlikely(argv.is_compat)) {
         argv.ptr.compat = PT_REGS_CCALL_PARM4(regs);
     } else {
-        argv.ptr.native = PT_REGS_CCALL_PARM4(regs);
+        argv.ptr.native = (const char __user *const __user *)PT_REGS_PARM3(regs); // Fixed line
     }
 #else
-    argv.ptr.native = PT_REGS_PARM3(regs);
+    argv.ptr.native = (const char __user *const __user *)PT_REGS_PARM3(regs); // Fixed line
 #endif
 
     return ksu_handle_execveat_ksud(&fd, filename_ptr, &argv, NULL, NULL);
