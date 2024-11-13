@@ -469,10 +469,8 @@ bool ksu_is_safe_mode()
 }
 
 #ifdef CONFIG_KPROBES
+// https://elixir.bootlin.com/linux/v5.10.158/source/fs/exec.c#L1864
 
-// https://elixir.bootlin.com/linux/v5.10.158/source/fs/exec.c#L1864
-#ifdef CONFIG_KPROBES
-// https://elixir.bootlin.com/linux/v5.10.158/source/fs/exec.c#L1864
 static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
     int fd = PT_REGS_PARM1(regs);  // Changed from int *fd to int fd
