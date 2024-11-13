@@ -478,14 +478,14 @@ static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 		(struct filename **)&PT_REGS_PARM2(regs);
 	struct user_arg_ptr argv;
 #ifdef CONFIG_COMPAT
-	argv.is_compat = PT_REGS_PARM3(regs);
-	if (unlikely(argv.is_compat)) {
-		argv.ptr.compat = (const compat_uptr_t __user *)PT_REGS_CCALL_PARM4(regs);
-	} else {
-		argv.ptr.native = (const compat_uptr_t __user *)PT_REGS_CCALL_PARM4(regs);
-	}
+    argv.is_compat = PT_REGS_PARM3(regs);
+    if (unlikely(argv.is_compat)) {
+        argv.ptr.compat = (const compat_uptr_t __user *)PT_REGS_CCALL_PARM4(regs); // Correção aqui
+    } else {
+        argv.ptr.native = PT_REGS_CCALL_PARM4(regs);
+    }
 #else
-	argv.ptr.native = PT_REGS_PARM3(regs);
+    argv.ptr.native = PT_REGS_PARM3(regs);
 #endif
 
 	return ksu_handle_execveat_ksud(fd, filename_ptr, &argv, NULL, NULL);
