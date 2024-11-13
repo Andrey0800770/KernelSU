@@ -339,9 +339,9 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 		bool success = ksu_get_allow_list(array, &array_length,
 						  arg2 == CMD_GET_ALLOW_LIST);
 		if (success) {
-			if (!copy_to_user(arg4, &array_length,
+			if (!copy_to_user((void __user *)arg4, &array_length,
 					  sizeof(array_length)) &&
-			    !copy_to_user(arg3, array,
+			    !copy_to_user((void __user *)arg3, array,
 					  sizeof(u32) * array_length)) {
 				if (copy_to_user(result, &reply_ok,
 						 sizeof(reply_ok))) {
@@ -383,7 +383,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 	// we are already manager
 	if (arg2 == CMD_GET_APP_PROFILE) {
 		struct app_profile profile;
-		if (copy_from_user(&profile, arg3, sizeof(profile))) {
+		if (copy_from_user(&profile, (void __user *)arg3, sizeof(profile))) {
 			pr_err("copy profile failed\n");
 			return 0;
 		}
@@ -403,7 +403,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 
 	if (arg2 == CMD_SET_APP_PROFILE) {
 		struct app_profile profile;
-		if (copy_from_user(&profile, arg3, sizeof(profile))) {
+		if (copy_from_user(&profile, (void __user *)arg3, sizeof(profile))) {
 			pr_err("copy profile failed\n");
 			return 0;
 		}
