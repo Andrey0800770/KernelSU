@@ -471,9 +471,11 @@ bool ksu_is_safe_mode()
 #ifdef CONFIG_KPROBES
 
 // https://elixir.bootlin.com/linux/v5.10.158/source/fs/exec.c#L1864
+#ifdef CONFIG_KPROBES
+// https://elixir.bootlin.com/linux/v5.10.158/source/fs/exec.c#L1864
 static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-    int fd = PT_REGS_PARM1(regs);  // Change from int *fd to int fd
+    int fd = PT_REGS_PARM1(regs);  // Changed from int *fd to int fd
     struct filename **filename_ptr =
         (struct filename **)&PT_REGS_PARM2(regs);
     struct user_arg_ptr argv;
@@ -490,6 +492,7 @@ static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 
     return ksu_handle_execveat_ksud(&fd, filename_ptr, &argv, NULL, NULL);
 }
+#endif
 
 static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
