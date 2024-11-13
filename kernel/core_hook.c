@@ -241,7 +241,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 
 	if (arg2 == CMD_BECOME_MANAGER) {
 		if (from_manager) {
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("become_manager: prctl reply error\n");
 			}
 			return 0;
@@ -253,7 +253,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 		if (is_allow_su()) {
 			pr_info("allow root for: %d\n", current_uid().val);
 			escape_to_root();
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("grant_root: prctl reply error\n");
 			}
 		}
@@ -315,7 +315,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 			return 0;
 		}
 		if (!handle_sepolicy(arg3, arg4)) {
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("sepolicy: prctl reply error\n");
 			}
 		}
@@ -326,7 +326,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 	if (arg2 == CMD_CHECK_SAFEMODE) {
 		if (ksu_is_safe_mode()) {
 			pr_warn("safemode enabled!\n");
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("safemode: prctl reply error\n");
 			}
 		}
@@ -366,7 +366,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 			pr_err("unknown cmd: %lu\n", arg2);
 		}
 		if (!copy_to_user(arg4, &allow, sizeof(allow))) {
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("prctl reply error, cmd: %lu\n", arg2);
 			}
 		} else {
@@ -394,7 +394,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 				pr_err("copy profile failed\n");
 				return 0;
 			}
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("prctl reply error, cmd: %lu\n", arg2);
 			}
 		}
@@ -410,7 +410,7 @@ int ksu_handle_prctl(int option, unsigned long arg2, unsigned long arg3,
 
 		// todo: validate the params
 		if (ksu_set_app_profile(&profile, true)) {
-			if (copy_to_user(result, &reply_ok, sizeof(reply_ok))) {
+			if (copy_to_user((void __user *)result, &reply_ok, sizeof(reply_ok))) {
 				pr_err("prctl reply error, cmd: %lu\n", arg2);
 			}
 		}
