@@ -473,22 +473,22 @@ bool ksu_is_safe_mode()
 // https://elixir.bootlin.com/linux/v5.10.158/source/fs/exec.c#L1864
 static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-	int *fd = (int *)&PT_REGS_PARM1(regs);
-	struct filename **filename_ptr =
-		(struct filename **)&PT_REGS_PARM2(regs);
-	struct user_arg_ptr argv;
+    int fd = PT_REGS_PARM1(regs);  // Change from int *fd to int fd
+    struct filename **filename_ptr =
+        (struct filename **)&PT_REGS_PARM2(regs);
+    struct user_arg_ptr argv;
 #ifdef CONFIG_COMPAT
-	argv.is_compat = PT_REGS_PARM3(regs);
-	if (unlikely(argv.is_compat)) {
-		argv.ptr.compat = PT_REGS_CCALL_PARM4(regs);
-	} else {
-		argv.ptr.native = PT_REGS_CCALL_PARM4(regs);
-	}
+    argv.is_compat = PT_REGS_PARM3(regs);
+    if (unlikely(argv.is_compat)) {
+        argv.ptr.compat = PT_REGS_CCALL_PARM4(regs);
+    } else {
+        argv.ptr.native = PT_REGS_CCALL_PARM4(regs);
+    }
 #else
-	argv.ptr.native = PT_REGS_PARM3(regs);
+    argv.ptr.native = PT_REGS_PARM3(regs);
 #endif
 
-	return ksu_handle_execveat_ksud(fd, filename_ptr, &argv, NULL, NULL);
+    return ksu_handle_execveat_ksud(&fd, filename_ptr, &argv, NULL, NULL);
 }
 
 static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
