@@ -476,7 +476,7 @@ static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
     int fd = PT_REGS_PARM1(regs);  // fd is correctly defined as an int
     struct filename **filename_ptr =
-        (struct filename **)(uintptr_t)PT_REGS_PARM2(regs);  // Fixed line without using address-of operator
+        (struct filename **)(uintptr_t)PT_REGS_PARM2(regs);  // Fixed line
     struct user_arg_ptr argv;
 
 #ifdef CONFIG_COMPAT
