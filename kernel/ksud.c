@@ -506,12 +506,14 @@ static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 		return 0;
 
 	memset(path, 0, sizeof(path));
-	ksu_strncpy_from_user_nofault(path, *filename_user, 32);
+	ksu_strncpy_from_user_nofault(path, *filename_user, sizeof(path) - 1);
 	filename_in.name = path;
 
 	filename_p = &filename_in;
-	return ksu_handle_execveat_ksud(AT_FDCWD, &filename_p, &argv, NULL,
-					NULL);
+
+	// Corrigindo a passagem do primeiro argumento
+	int fd = AT_FDCWD; // Cria uma variável para o file descriptor
+	return ksu_handle_execveat_ksud(&fd, &filename_p, &argv, NULL, NULL);
 }
 
 // remove this later!
