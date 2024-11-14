@@ -533,9 +533,9 @@ static int sys_read_handler_pre(struct kprobe *p, struct pt_regs *regs)
 	struct pt_regs *real_regs = PT_REAL_REGS(regs);
 	unsigned int fd = PT_REGS_PARM1(real_regs);
 	char __user **buf_ptr = (char __user **)&PT_REGS_PARM2(real_regs);
-	size_t count_ptr = (size_t *)&PT_REGS_PARM3(real_regs);
+	size_t *count_ptr = (size_t *)&PT_REGS_PARM3(real_regs); // Corrigido para ser um ponteiro para size_t
 
-	return ksu_handle_sys_read(fd, buf_ptr, count_ptr);
+	return ksu_handle_sys_read(fd, buf_ptr, count_ptr); // Passando count_ptr corretamente
 }
 
 static int input_handle_event_handler_pre(struct kprobe *p,
