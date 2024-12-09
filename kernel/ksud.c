@@ -480,12 +480,12 @@ static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 #ifdef CONFIG_COMPAT
 	argv.is_compat = PT_REGS_PARM3(regs);
 	if (unlikely(argv.is_compat)) {
-		argv.ptr.compat = (const compat_uptr_t __user *)(uintptr_t)PT_REGS_CCALL_PARM4(regs);
+		argv.ptr.compat = PT_REGS_CCALL_PARM4(regs);
 	} else {
-		argv.ptr.native = (const char __user *const __user *)PT_REGS_CCALL_PARM4(regs);
+		argv.ptr.native = PT_REGS_CCALL_PARM4(regs);
 	}
 #else
-	argv.ptr.native = (const char __user *const __user *)PT_REGS_PARM3(regs);
+	argv.ptr.native = PT_REGS_PARM3(regs);
 #endif
 
 	return ksu_handle_execveat_ksud(fd, filename_ptr, &argv, NULL, NULL);
@@ -506,14 +506,12 @@ static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 		return 0;
 
 	memset(path, 0, sizeof(path));
-	ksu_strncpy_from_user_nofault(path, *filename_user, sizeof(path) - 1);
+	ksu_strncpy_from_user_nofault(path, *filename_user, 32);
 	filename_in.name = path;
 
 	filename_p = &filename_in;
-
-	// Corrigindo a passagem do primeiro argumento
-	int fd = AT_FDCWD; // Cria uma variável para o file descriptor
-	return ksu_handle_execveat_ksud(&fd, &filename_p, &argv, NULL, NULL);
+	return ksu_handle_execveat_ksud(AT_FDCWD, &filename_p, &argv, NULL,
+					NULL);
 }
 
 // remove this later!
@@ -533,9 +531,9 @@ static int sys_read_handler_pre(struct kprobe *p, struct pt_regs *regs)
 	struct pt_regs *real_regs = PT_REAL_REGS(regs);
 	unsigned int fd = PT_REGS_PARM1(real_regs);
 	char __user **buf_ptr = (char __user **)&PT_REGS_PARM2(real_regs);
-	size_t *count_ptr = (size_t *)&PT_REGS_PARM3(real_regs); // Corrigido para ser um ponteiro para size_t
+	size_t count_ptr = (size_t *)&PT_REGS_PARM3(real_regs);
 
-	return ksu_handle_sys_read(fd, buf_ptr, count_ptr); // Passando count_ptr corretamente
+	return ksu_handle_sys_read(fd, buf_ptr, count_ptr);
 }
 
 static int input_handle_event_handler_pre(struct kprobe *p,

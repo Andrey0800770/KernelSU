@@ -262,12 +262,12 @@ static int execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 
 static int sys_execve_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-    struct pt_regs *real_regs = PT_REAL_REGS(regs);
-    const char __user **filename_user =
-        (const char **)&PT_REGS_PARM1(real_regs);
-    
-    int fd = AT_FDCWD; // Create a variable to hold the integer value
-    return ksu_handle_execve_sucompat(&fd, filename_user, NULL, NULL, NULL); // Pass the address of fd
+	struct pt_regs *real_regs = PT_REAL_REGS(regs);
+	const char __user **filename_user =
+		(const char **)&PT_REGS_PARM1(real_regs);
+
+	return ksu_handle_execve_sucompat(AT_FDCWD, filename_user, NULL, NULL,
+					  NULL);
 }
 
 #if 1

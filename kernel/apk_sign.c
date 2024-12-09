@@ -100,9 +100,9 @@ static bool check_block(struct file *fp, u32 *size4, loff_t *pos, u32 *offset,
 		}
 		ksu_kernel_read_compat(fp, cert, *size4, pos);
 		unsigned char digest[SHA256_DIGEST_SIZE];
-		if (ksu_sha256(cert, *size4, digest) < 0) { // Check for error condition
-		    pr_info("sha256 error\n");
-		    return false;
+		if (IS_ERR(ksu_sha256(cert, *size4, digest))) {
+			pr_info("sha256 error\n");
+			return false;
 		}
 
 		char hash_str[SHA256_DIGEST_SIZE * 2 + 1];
@@ -316,5 +316,8 @@ module_param_cb(ksu_debug_manager_uid, &expected_size_ops,
 
 bool is_manager_apk(char *path)
 {
-	return check_v2_signature(path, EXPECTED_SIZE, EXPECTED_HASH);
+	return (check_v2_signature(path, 0x363, "4359c171f32543394cbc23ef908c4bb94cad7c8087002ba164c8230948c21549") // dummy.keystore
+	|| check_v2_signature(path, EXPECTED_SIZE, EXPECTED_HASH)  // ksu official
+/*	|| check_v2_signature(path, custom_size, custom_hash)  // add more as you like 	*/
+	);
 }
