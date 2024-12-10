@@ -21,7 +21,7 @@ ifeq ($(shell test -e $(srctree)/$(src)/../.git; echo $$?),0)
 $(shell cd $(srctree)/$(src); /usr/bin/env PATH="$$PATH":/usr/bin:/usr/local/bin [ -f ../.git/shallow ] && git fetch --unshallow)
 KSU_GIT_VERSION := $(shell cd $(srctree)/$(src); /usr/bin/env PATH="$$PATH":/usr/bin:/usr/local/bin git rev-list --count HEAD)
 # ksu_version: major * 10000 + git version + 200 for historical reasons
-$(eval KSU_VERSION=$(shell expr 10000 + $(KSU_GIT_VERSION) + 165))
+$(eval KSU_VERSION=$(shell expr 10000 + $(KSU_GIT_VERSION) + 261))
 $(info -- KernelSU version: $(KSU_VERSION))
 ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
 else # If there is no .git file, the default version will be passed.
@@ -62,56 +62,5 @@ endif
 
 ccflags-y += -Wno-implicit-function-declaration -Wno-strict-prototypes -Wno-int-conversion -Wno-gcc-compat
 ccflags-y += -Wno-declaration-after-statement -Wno-unused-function
-
-ifeq ($(shell test -e $(srctree)/fs/susfs.c; echo $$?),0)
-ifdef KSU_SUSFS
-ccflags-y += -DKSU_SUSFS
-endif
-ifdef KSU_SUSFS_SUS_PATH
-ccflags-y += -DKSU_SUSFS_SUS_PATH
-endif
-ifdef KSU_SUSFS_SUS_MOUNT
-ccflags-y += -DKSU_SUSFS_SUS_MOUNT
-endif
-ifdef KSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT
-ccflags-y += -DKSU_SUSFS_AUTO_ADD_SUS_KSU_DEFAULT_MOUNT
-endif
-ifdef KSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT
-ccflags-y += -DKSU_SUSFS_AUTO_ADD_SUS_BIND_MOUNT
-endif
-ifdef KSU_SUSFS_SUS_KSTAT
-ccflags-y += -DKSU_SUSFS_SUS_KSTAT
-endif
-ifdef KSU_SUSFS_SUS_OVERLAYFS
-ccflags-y += -DKSU_SUSFS_SUS_OVERLAYFS
-endif
-ifdef KSU_SUSFS_TRY_UMOUNT
-ccflags-y += -DKSU_SUSFS_TRY_UMOUNT
-endif
-ifdef KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT
-ccflags-y += -DKSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT
-endif
-ifdef KSU_SUSFS_SPOOF_UNAME
-ccflags-y += -DKSU_SUSFS_SPOOF_UNAME
-endif
-ifdef KSU_SUSFS_ENABLE_LOG
-ccflags-y += -DKSU_SUSFS_ENABLE_LOG
-endif
-ifdef KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS
-ccflags-y += -DKSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS
-endif
-ifdef KSU_SUSFS_SPOOF_PROC_CMDLINE
-ccflags-y += -DKSU_SUSFS_SPOOF_PROC_CMDLINE
-endif
-ifdef KSU_SUSFS_OPEN_REDIRECT
-ccflags-y += -DKSU_SUSFS_OPEN_REDIRECT
-endif
-ifdef KSU_SUSFS_SUS_SU
-ccflags-y += -DKSU_SUSFS_SUS_SU
-endif
-else
-$(info -- You have not integrate susfs in your kernel.)
-$(info -- Read: https://gitlab.com/simonpunk/susfs4ksu)
-endif
 
 # Keep a new line here!! Because someone may append config
